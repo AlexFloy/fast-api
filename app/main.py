@@ -17,6 +17,22 @@ def get_db():
         db.close()
 
 
+@app.get("/authors")
+def get_author_info():
+    db = SessionLocal()
+    authors = db.query(AuthorModel).all()
+    db.close()
+    return authors
+
+
+@app.get("/books")
+def get_books_info():
+    db = SessionLocal()
+    books = db.query(BookModel).all()
+    db.close()
+    return books
+
+
 # READ
 @app.get("/authors/{author_id}", response_model=Author)
 def get_author(author_id: int):
@@ -72,6 +88,7 @@ def update_author(author_id: int, author: CreateAuthor):
     for key, value in author.model_dump().items():
         setattr(author_model, key, value)
     db.commit()
+    db.refresh(author_model)
     db.close()
     return author_model
 
@@ -86,6 +103,7 @@ def update_book(book_id: int, book: CreateBook):
     for key, value in book.dict().items():
         setattr(book_model, key, value)
     db.commit()
+    db.refresh(book_model)
     db.close()
     return book_model
 
